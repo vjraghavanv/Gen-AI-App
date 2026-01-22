@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AWS Bedrock – Claude Demo</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #container {
+      width: 100%;
+      max-width: 650px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #232f3e;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 14px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      resize: none;
+      outline: none;
+      transition: border 0.2s ease;
+    }
+
+    textarea:focus {
+      border-color: #ff9900;
+    }
+
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff9900, #ffb84d);
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #232f3e;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(255, 153, 0, 0.35);
+    }
+
+    .response {
+      margin-top: 25px;
+      padding: 18px;
+      background: #f8f9fb;
+      border-left: 4px solid #ff9900;
+      border-radius: 8px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #333;
+      white-space: pre-wrap;
+      display: none;
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="container">
+    <h1>AWS Bedrock – Claude in Action</h1>
+    <div class="subtitle">
+      Serverless AI demo powered by AWS Lambda & Amazon Bedrock
+    </div>
+
+    <textarea
+      id="user-prompt"
+      rows="5"
+      placeholder="Ask something to Claude..."
+    ></textarea>
+
+    <button id="submit-btn">Ask Claude 🚀</button>
+
+    <div id="response-container" class="response"></div>
+
+    <div class="footer">
+      Built using AWS Serverless & DevOps principles
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("submit-btn").addEventListener("click", function () {
+      const prompt = document.getElementById("user-prompt").value;
+      const responseContainer = document.getElementById("response-container");
+
+      if (prompt.trim() === "") {
+        alert("Please enter a prompt.");
+        return;
+      }
+
+      responseContainer.style.display = "block";
+      responseContainer.textContent = "🤖 Thinking...";
+
+      fetch("https://jcvewh425b.execute-api.us-west-2.amazonaws.com/prod/claude", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          temperature: 0.7,
+          max_tokens: 200,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.response) {
+            responseContainer.textContent = data.response;
+          } else if (data.error) {
+            responseContainer.textContent = `❌ Error: ${data.error}`;
+          }
+        })
+        .catch((error) => {
+          responseContainer.textContent = `❌ Error: ${error}`;
+        });
+    });
+  </script>
+
+</body>
+</html>
